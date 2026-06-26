@@ -3,6 +3,7 @@ node_modules/
 .DS_Store
 
 tmp/
+tmp-preview/
 产品卡片样稿.html
 
 *.log

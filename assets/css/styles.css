@@ -933,19 +933,19 @@ p {
 .manual-product-card::before {
   content: "已投保";
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 9px;
+  left: 9px;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
-  color: #5b2b20;
-  background: rgba(250, 246, 234, 0.92);
-  border: 2px solid rgba(124, 61, 42, 0.82);
+  width: 38px;
+  height: 38px;
+  color: #e94925;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2px solid #e94925;
   border-radius: 50%;
-  box-shadow: 0 6px 16px rgba(55, 28, 18, 0.2);
-  font-size: 12px;
+  box-shadow: 0 4px 12px rgba(80, 32, 18, 0.12);
+  font-size: 10px;
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: 0;
@@ -955,13 +955,15 @@ p {
 .manual-product-card::after {
   content: "";
   position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 2;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(124, 61, 42, 0.42);
-  border-radius: 50%;
+  top: 5px;
+  left: 23px;
+  z-index: 1;
+  width: 8px;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2px solid #e94925;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
   pointer-events: none;
 }
 

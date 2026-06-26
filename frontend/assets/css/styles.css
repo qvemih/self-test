@@ -28,6 +28,10 @@ body {
   overflow-x: hidden;
 }
 
+html[dir="rtl"] body {
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+}
+
 img {
   display: block;
   max-width: 100%;
@@ -101,6 +105,53 @@ a {
   border-bottom-color: var(--gold);
 }
 
+.language-switch {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 244, 226, 0.08);
+  border: 1px solid rgba(255, 230, 190, 0.16);
+}
+
+.language-switch button {
+  min-width: 42px;
+  padding: 6px 8px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.language-switch button.is-active {
+  color: #fff7e8;
+  background: rgba(139, 63, 45, 0.88);
+}
+
+html[dir="rtl"] .site-header,
+html[dir="rtl"] .site-footer,
+html[dir="rtl"] .split-intro,
+html[dir="rtl"] .product-intro,
+html[dir="rtl"] .message-layout,
+html[dir="rtl"] .custom-page-section,
+html[dir="rtl"] .about-story {
+  direction: rtl;
+}
+
+html[dir="rtl"] .site-nav {
+  justify-content: flex-start;
+}
+
+html[dir="rtl"] .slide-copy,
+html[dir="rtl"] .page-hero-copy {
+  right: clamp(24px, 8vw, 110px);
+  left: auto;
+  text-align: right;
+}
+
 .section-pad {
   padding: clamp(46px, 7vw, 92px) clamp(18px, 6vw, 92px);
 }
@@ -125,10 +176,19 @@ a {
   transition: transform 0.5s ease;
 }
 
+.dynamic-slides {
+  width: 100%;
+}
+
 .slide {
   position: relative;
   width: 33.333%;
   min-height: 620px;
+}
+
+.dynamic-slides .slide {
+  flex: 0 0 100%;
+  width: 100%;
 }
 
 .slide img {
@@ -257,6 +317,56 @@ a {
   background: var(--gold);
 }
 
+.home-carousel-control {
+  position: absolute;
+  z-index: 6;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 64px;
+  color: #fff4df;
+  background: rgba(30, 18, 13, 0.48);
+  border: 1px solid rgba(255, 230, 190, 0.24);
+  font-size: 48px;
+  line-height: 1;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.home-carousel-prev {
+  left: 22px;
+}
+
+.home-carousel-next {
+  right: 22px;
+}
+
+.home-carousel-dots {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  bottom: 26px;
+  display: flex;
+  gap: 12px;
+  transform: translateX(-50%);
+}
+
+.home-carousel-dot {
+  width: 34px;
+  height: 4px;
+  padding: 0;
+  overflow: hidden;
+  color: transparent;
+  background: rgba(255, 240, 210, 0.35);
+  border: 0;
+  cursor: pointer;
+}
+
+.home-carousel-dot.is-active {
+  background: var(--gold);
+}
+
 .split-intro {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -309,6 +419,53 @@ p {
 .series {
   background: #f4efe7;
   color: #21120e;
+}
+
+.custom-page-sections {
+  display: grid;
+  gap: 24px;
+  background: #f4efe7;
+  color: #21120e;
+}
+
+.custom-page-section {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.42fr) minmax(0, 0.58fr);
+  gap: clamp(22px, 4vw, 44px);
+  align-items: center;
+  padding: clamp(22px, 4vw, 38px);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(90, 55, 40, 0.14);
+  box-shadow: 0 14px 34px rgba(57, 35, 24, 0.12);
+}
+
+.custom-page-section-text {
+  grid-template-columns: 1fr;
+}
+
+.custom-page-section figure {
+  margin: 0;
+}
+
+.custom-page-section img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.custom-page-section .eyebrow {
+  margin-bottom: 10px;
+  color: #8a4734;
+  font-weight: 700;
+}
+
+.custom-page-section h2 {
+  color: #21120e;
+}
+
+.custom-page-section p {
+  color: #574138;
+  line-height: 1.85;
 }
 
 .series p,
@@ -931,21 +1088,21 @@ p {
 }
 
 .manual-product-card.is-insured::before {
-  content: "已投保";
+  content: attr(data-insured-label);
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 9px;
+  left: 9px;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
-  color: #5b2b20;
-  background: rgba(250, 246, 234, 0.92);
-  border: 2px solid rgba(124, 61, 42, 0.82);
+  width: 38px;
+  height: 38px;
+  color: #e94925;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2px solid #e94925;
   border-radius: 50%;
-  box-shadow: 0 6px 16px rgba(55, 28, 18, 0.2);
-  font-size: 12px;
+  box-shadow: 0 4px 12px rgba(80, 32, 18, 0.12);
+  font-size: 10px;
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: 0;
@@ -955,13 +1112,15 @@ p {
 .manual-product-card.is-insured::after {
   content: "";
   position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 2;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(124, 61, 42, 0.42);
-  border-radius: 50%;
+  top: 5px;
+  left: 23px;
+  z-index: 1;
+  width: 8px;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2px solid #e94925;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
   pointer-events: none;
 }
 
@@ -1102,6 +1261,14 @@ p {
   line-height: 1.32;
 }
 
+.report-empty {
+  margin: 0;
+  padding: 18px 20px;
+  color: #574138;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(92, 59, 42, 0.12);
+}
+
 .report-image-grid {
   display: flex;
   align-items: stretch;
@@ -1142,6 +1309,7 @@ p {
   max-width: min(760px, 100%);
   margin: 0 auto;
   padding: 0 58px 34px;
+  overflow: hidden;
 }
 
 .report-carousel-arrow {
@@ -1273,7 +1441,27 @@ p {
 }
 
 .contact-panel {
+  display: grid;
+  justify-items: center;
   padding: 30px;
+}
+
+.contact-panel h2 {
+  margin: 0;
+  color: #3b231b;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.contact-service-qr {
+  display: block;
+  width: min(240px, 100%);
+  height: auto;
+  margin-top: 18px;
+  background: #fff;
+  border: 1px solid rgba(79, 48, 34, 0.12);
 }
 
 .contact-panel p + p {
@@ -1531,6 +1719,24 @@ p {
   .slide {
     min-height: 500px;
     height: 500px;
+  }
+
+  .home-carousel-control {
+    width: 34px;
+    height: 50px;
+    font-size: 36px;
+  }
+
+  .home-carousel-prev {
+    left: 10px;
+  }
+
+  .home-carousel-next {
+    right: 10px;
+  }
+
+  .home-carousel-dot {
+    width: 24px;
   }
 
   .slide-copy,

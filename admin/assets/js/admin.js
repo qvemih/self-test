@@ -51,7 +51,7 @@ function boolValue(value) {
 }
 
 function fieldValue(data, field) {
-  if (!data) return "";
+  if (!data) return field.defaultValue ?? "";
   return data[field.name] ?? "";
 }
 
@@ -105,16 +105,17 @@ function renderNav() {
 function inputField(field, data) {
   const value = fieldValue(data, field);
   const labelClass = field.type === "textarea" ? "wide" : "";
+  const requiredAttr = field.required ? "required" : "";
   if (field.type === "textarea") {
-    return `<label class="${labelClass}"><span>${field.label}</span><textarea name="${field.name}">${escapeHtml(value)}</textarea></label>`;
+    return `<label class="${labelClass}"><span>${field.label}</span><textarea name="${field.name}" ${requiredAttr}>${escapeHtml(value)}</textarea></label>`;
   }
   if (field.type === "select") {
-    return `<label><span>${field.label}</span><select name="${field.name}">${field.options(value)}</select></label>`;
+    return `<label><span>${field.label}</span><select name="${field.name}" ${requiredAttr}>${field.options(value)}</select></label>`;
   }
   if (field.type === "boolean") {
     return `<label><span>${field.label}</span><select name="${field.name}"><option value="1" ${boolValue(value) === "1" ? "selected" : ""}>显示/启用</option><option value="0" ${boolValue(value) === "0" ? "selected" : ""}>隐藏/停用</option></select></label>`;
   }
-  return `<label class="${labelClass}"><span>${field.label}</span><input name="${field.name}" value="${escapeHtml(value)}" ${field.required ? "required" : ""}></label>`;
+  return `<label class="${labelClass}"><span>${field.label}</span><input type="${field.type || "text"}" name="${field.name}" value="${escapeHtml(value)}" ${requiredAttr}></label>`;
 }
 
 function formDataToJson(form) {
@@ -150,7 +151,12 @@ async function renderCrud(config) {
 
   document.querySelector("[data-crud-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
-    const payload = formDataToJson(event.currentTarget);
+    const form = event.currentTarget;
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    const payload = formDataToJson(form);
     const path = editing ? `${config.endpoint}/${editing[config.idField || "id"]}` : config.endpoint;
     const method = editing ? "PUT" : "POST";
     try {
@@ -310,7 +316,7 @@ const crudConfigs = {
     fields: [
       { name: "label", label: "导航名称", required: true },
       { name: "path", label: "跳转地址", required: true },
-      { name: "sort_order", label: "排序" },
+      { name: "sort_order", label: "排序", type: "number", required: true },
       { name: "is_visible", label: "是否显示", type: "boolean" }
     ],
     columns: [
@@ -325,13 +331,13 @@ const crudConfigs = {
     endpoint: "/api/admin/page-sections",
     fields: [
       { name: "page_id", label: "所属页面", type: "select", options: pageOptions },
-      { name: "section_key", label: "模块标识", required: true },
+      { name: "section_key", label: "模块标识" },
       { name: "title", label: "模块标题" },
       { name: "subtitle", label: "副标题" },
       { name: "body", label: "正文", type: "textarea" },
       { name: "image_id", label: "配图", type: "select", options: mediaOptions },
-      { name: "sort_order", label: "排序" },
-      { name: "is_visible", label: "是否显示", type: "boolean" }
+      { name: "sort_order", label: "排序", type: "number" },
+      { name: "is_visible", label: "是否显示", type: "boolean", defaultValue: 1 }
     ],
     columns: [
       { name: "page_title", label: "页面" },
@@ -399,8 +405,8 @@ const crudConfigs = {
     fields: [
       { name: "title", label: "报告名称", required: true },
       { name: "slug", label: "报告标识", required: true },
-      { name: "sort_order", label: "排序" },
-      { name: "is_visible", label: "是否显示", type: "boolean" }
+      { name: "sort_order", label: "排序", type: "number", required: true },
+      { name: "is_visible", label: "是否显示", type: "boolean", defaultValue: 1 }
     ],
     columns: [
       { name: "title", label: "报告名称" },
@@ -495,7 +501,11 @@ async function renderMedia() {
         <tbody>
           ${state.media.map((item) => `
             <tr>
-              <td><img class="thumb" src="${item.file_path}" alt=""></td>
+              <td>
+                <button class="media-preview-trigger" type="button" data-media-preview="${escapeHtml(item.file_path)}" data-media-alt="${escapeHtml(item.alt_text || item.file_path)}" aria-label="放大预览图片">
+                  <img class="thumb" src="${item.file_path}" alt="">
+                </button>
+              </td>
               <td>${escapeHtml(item.file_path)}</td>
               <td>${escapeHtml(item.alt_text || "")}</td>
               <td>${item.file_size}</td>
@@ -505,7 +515,35 @@ async function renderMedia() {
         </tbody>
       </table>
     </section>
+    <div class="media-lightbox" data-media-lightbox aria-hidden="true">
+      <button class="media-lightbox-close" type="button" data-media-lightbox-close aria-label="关闭预览">&times;</button>
+      <img src="" alt="">
+    </div>
   `;
+  const lightbox = document.querySelector("[data-media-lightbox]");
+  const lightboxImage = lightbox.querySelector("img");
+  const closeLightbox = () => {
+    lightbox.classList.remove("is-open");
+    lightbox.setAttribute("aria-hidden", "true");
+    lightboxImage.removeAttribute("src");
+    lightboxImage.alt = "";
+  };
+  document.querySelectorAll("[data-media-preview]").forEach((button) => {
+    button.addEventListener("click", () => {
+      lightboxImage.src = button.dataset.mediaPreview;
+      lightboxImage.alt = button.dataset.mediaAlt || "媒体图片预览";
+      lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.querySelector("[data-media-lightbox-close]").focus();
+    });
+  });
+  document.querySelector("[data-media-lightbox-close]").addEventListener("click", closeLightbox);
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) closeLightbox();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && lightbox.classList.contains("is-open")) closeLightbox();
+  });
   document.querySelector("[data-upload-form]").addEventListener("submit", async (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);

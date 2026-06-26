@@ -2,7 +2,7 @@ const adminService = require("../../backend/services/admin-service");
 const contentService = require("../../backend/services/content-service");
 const { createSession, clearSession, getSessionUser, requireAdmin } = require("../../backend/middleware/auth");
 const { readJson, readRequestBody, parseMultipart, sendJson } = require("../../backend/utils/http");
-const { requireFields } = require("../validators/admin-validators");
+const { requireAnyField, requireFields, requireNumberFields } = require("../validators/admin-validators");
 
 async function session(req, res) {
   sendJson(res, 200, { user: getSessionUser(req) });
@@ -40,7 +40,8 @@ async function navigationItems(req, res, params) {
   if (req.method === "GET") return sendJson(res, 200, contentService.getNavigationItems({ includeHidden: true }));
   if (req.method === "POST") {
     const payload = await readJson(req);
-    requireFields(payload, ["label", "path"]);
+    requireFields(payload, ["label", "path", "sort_order"]);
+    requireNumberFields(payload, ["sort_order"]);
     return sendJson(res, 201, adminService.createNavigationItem(payload));
   }
   if (req.method === "PUT") return sendJson(res, 200, adminService.updateNavigationItem(params.id, await readJson(req)));
@@ -58,10 +59,22 @@ async function pageSections(req, res, params) {
   if (req.method === "GET") return sendJson(res, 200, adminService.listPageSections());
   if (req.method === "POST") {
     const payload = await readJson(req);
-    requireFields(payload, ["page_id", "section_key"]);
+    requireFields(payload, ["page_id"]);
+    requireAnyField(payload, ["section_key", "title", "subtitle", "body", "image_id"], "请至少填写模块标识、模块标题、副标题、正文或配图中的一项。");
+    if (payload.sort_order !== undefined && payload.sort_order !== null && String(payload.sort_order).trim() !== "") {
+      requireNumberFields(payload, ["sort_order"]);
+    }
     return sendJson(res, 201, adminService.createPageSection(payload));
   }
-  if (req.method === "PUT") return sendJson(res, 200, adminService.updatePageSection(params.id, await readJson(req)));
+  if (req.method === "PUT") {
+    const payload = await readJson(req);
+    requireFields(payload, ["page_id"]);
+    requireAnyField(payload, ["section_key", "title", "subtitle", "body", "image_id"], "请至少填写模块标识、模块标题、副标题、正文或配图中的一项。");
+    if (payload.sort_order !== undefined && payload.sort_order !== null && String(payload.sort_order).trim() !== "") {
+      requireNumberFields(payload, ["sort_order"]);
+    }
+    return sendJson(res, 200, adminService.updatePageSection(params.id, payload));
+  }
   if (req.method === "DELETE") return sendJson(res, 200, adminService.deleteRow("page_sections", params.id));
 }
 
@@ -106,10 +119,16 @@ async function reportGroups(req, res, params) {
   if (req.method === "GET") return sendJson(res, 200, contentService.getQualityReportGroups({ includeHidden: true }));
   if (req.method === "POST") {
     const payload = await readJson(req);
-    requireFields(payload, ["title", "slug"]);
+    requireFields(payload, ["title", "slug", "sort_order"]);
+    requireNumberFields(payload, ["sort_order"]);
     return sendJson(res, 201, adminService.createReportGroup(payload));
   }
-  if (req.method === "PUT") return sendJson(res, 200, adminService.updateReportGroup(params.id, await readJson(req)));
+  if (req.method === "PUT") {
+    const payload = await readJson(req);
+    requireFields(payload, ["title", "slug", "sort_order"]);
+    requireNumberFields(payload, ["sort_order"]);
+    return sendJson(res, 200, adminService.updateReportGroup(params.id, payload));
+  }
   if (req.method === "DELETE") return sendJson(res, 200, adminService.deleteRow("quality_report_groups", params.id));
 }
 

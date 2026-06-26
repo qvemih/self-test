@@ -15,6 +15,13 @@ function nullableNumber(value) {
   return Number(value);
 }
 
+function normalizeSectionKey(value) {
+  if (value !== undefined && value !== null && String(value).trim() !== "") {
+    return String(value).trim();
+  }
+  return `custom-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
 function runUpdate(table, idColumn, idValue, fields, payload) {
   const db = getDatabase();
   const tablesWithUpdatedAt = new Set(["pages", "page_sections", "products"]);
@@ -116,12 +123,13 @@ function listPageSections() {
 
 function createPageSection(payload) {
   const db = getDatabase();
+  const sectionKey = normalizeSectionKey(payload.section_key);
   const result = db.prepare(`
     INSERT INTO page_sections (page_id, section_key, title, subtitle, body, image_id, sort_order, is_visible)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     Number(payload.page_id),
-    payload.section_key,
+    sectionKey,
     payload.title || "",
     payload.subtitle || "",
     payload.body || "",
@@ -133,6 +141,10 @@ function createPageSection(payload) {
 }
 
 function updatePageSection(id, payload) {
+  const normalizedPayload = { ...payload };
+  if (Object.prototype.hasOwnProperty.call(normalizedPayload, "section_key")) {
+    normalizedPayload.section_key = normalizeSectionKey(normalizedPayload.section_key);
+  }
   return runUpdate("page_sections", "id", Number(id), {
     page_id: Number,
     section_key: String,
@@ -142,7 +154,7 @@ function updatePageSection(id, payload) {
     image_id: nullableNumber,
     sort_order: Number,
     is_visible: boolToInt
-  }, payload);
+  }, normalizedPayload);
 }
 
 function deleteRow(table, id) {
