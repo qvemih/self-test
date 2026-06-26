@@ -6,7 +6,8 @@ const seedData = require("../../database/seeds/seed-data");
 
 const rootDir = path.resolve(__dirname, "../..");
 const databaseDir = path.join(rootDir, "database");
-const databasePath = path.join(databaseDir, "site.sqlite");
+const sourceDatabasePath = path.join(databaseDir, "site.sqlite");
+const databasePath = process.env.VERCEL ? "/tmp/zisha-site.sqlite" : sourceDatabasePath;
 const schemaPath = path.join(databaseDir, "schema.sql");
 
 let database;
@@ -14,6 +15,9 @@ let database;
 function getDatabase() {
   if (!database) {
     fs.mkdirSync(databaseDir, { recursive: true });
+    if (process.env.VERCEL && !fs.existsSync(databasePath) && fs.existsSync(sourceDatabasePath)) {
+      fs.copyFileSync(sourceDatabasePath, databasePath);
+    }
     database = new DatabaseSync(databasePath);
     database.exec("PRAGMA foreign_keys = ON;");
     database.exec(fs.readFileSync(schemaPath, "utf8"));

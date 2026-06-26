@@ -10,7 +10,7 @@ const port = Number(process.env.PORT || 4173);
 
 getDatabase();
 
-const server = http.createServer(async (req, res) => {
+async function handleRequest(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || "127.0.0.1"}`);
   const pathname = decodeURIComponent(url.pathname);
 
@@ -35,9 +35,16 @@ const server = http.createServer(async (req, res) => {
       message: error.message || "服务器错误。"
     });
   }
-});
+}
 
-server.listen(port, "127.0.0.1", () => {
-  console.log(`Zisha site running at http://127.0.0.1:${port}/`);
-  console.log(`Admin running at http://127.0.0.1:${port}/admin`);
-});
+if (require.main === module) {
+  const server = http.createServer(handleRequest);
+  server.listen(port, "127.0.0.1", () => {
+    console.log(`Zisha site running at http://127.0.0.1:${port}/`);
+    console.log(`Admin running at http://127.0.0.1:${port}/admin`);
+  });
+}
+
+module.exports = {
+  handleRequest
+};
