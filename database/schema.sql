@@ -1,0 +1,139 @@
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS media_files (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  original_name TEXT NOT NULL,
+  file_name TEXT NOT NULL,
+  file_path TEXT NOT NULL UNIQUE,
+  mime_type TEXT NOT NULL,
+  file_size INTEGER NOT NULL DEFAULT 0,
+  width INTEGER,
+  height INTEGER,
+  alt_text TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS site_settings (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  site_name TEXT NOT NULL,
+  company_name TEXT NOT NULL,
+  logo_image_id INTEGER,
+  phone TEXT,
+  email TEXT,
+  address TEXT,
+  wechat TEXT,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (logo_image_id) REFERENCES media_files(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS navigation_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  label TEXT NOT NULL,
+  path TEXT NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  is_visible INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS pages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  hero_title TEXT,
+  hero_subtitle TEXT,
+  hero_image_id INTEGER,
+  is_published INTEGER NOT NULL DEFAULT 1,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (hero_image_id) REFERENCES media_files(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS page_sections (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  page_id INTEGER NOT NULL,
+  section_key TEXT NOT NULL,
+  title TEXT,
+  subtitle TEXT,
+  body TEXT,
+  image_id INTEGER,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  is_visible INTEGER NOT NULL DEFAULT 1,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE,
+  FOREIGN KEY (image_id) REFERENCES media_files(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS home_slides (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  subtitle TEXT,
+  image_id INTEGER,
+  link_url TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  is_visible INTEGER NOT NULL DEFAULT 1,
+  FOREIGN KEY (image_id) REFERENCES media_files(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS product_categories (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  is_visible INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  category_id INTEGER,
+  name TEXT NOT NULL,
+  summary TEXT,
+  material TEXT,
+  specification TEXT,
+  image_id INTEGER,
+  is_insured INTEGER NOT NULL DEFAULT 1,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  is_visible INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (category_id) REFERENCES product_categories(id) ON DELETE SET NULL,
+  FOREIGN KEY (image_id) REFERENCES media_files(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS quality_report_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  is_visible INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS quality_report_images (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  group_id INTEGER NOT NULL,
+  image_id INTEGER,
+  alt_text TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  is_visible INTEGER NOT NULL DEFAULT 1,
+  FOREIGN KEY (group_id) REFERENCES quality_report_groups(id) ON DELETE CASCADE,
+  FOREIGN KEY (image_id) REFERENCES media_files(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  wechat TEXT,
+  product_interest TEXT,
+  content TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'new',
+  remark TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  handled_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS admin_users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  is_active INTEGER NOT NULL DEFAULT 1,
+  last_login_at TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

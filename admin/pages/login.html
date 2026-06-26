@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>后台登录 - 臻紫本作</title>
+  <link rel="stylesheet" href="/admin/assets/css/admin.css">
+</head>
+<body class="admin-login">
+  <form class="login-panel" data-login-form>
+    <h1>后台管理登录</h1>
+    <div class="admin-form">
+      <label class="wide">
+        <span>账号</span>
+        <input name="username" value="admin" autocomplete="username" required>
+      </label>
+      <label class="wide">
+        <span>密码</span>
+        <input name="password" type="password" value="admin123" autocomplete="current-password" required>
+      </label>
+      <div class="admin-actions">
+        <button type="submit">登录</button>
+      </div>
+    </div>
+    <p class="status-text" data-status></p>
+  </form>
+  <script>
+    const form = document.querySelector("[data-login-form]");
+    const status = document.querySelector("[data-status]");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(form).entries());
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        status.textContent = data.message || "登录失败";
+        return;
+      }
+      location.href = "/admin";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>后台管理 - 臻紫本作</title>
+  <link rel="stylesheet" href="/admin/assets/css/admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <h1>臻紫本作后台</h1>
+      <nav class="admin-nav" data-admin-nav></nav>
+      <button class="logout-button" type="button" data-logout>退出登录</button>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-top">
+        <div>
+          <h1 data-module-title>后台管理</h1>
+          <p>所有页面数据从数据库读取，修改后前端同步更新。</p>
+        </div>
+        <a href="/index.html" target="_blank">查看网站</a>
+      </div>
+      <section data-admin-content></section>
+    </main>
+  </div>
+  <script src="/admin/assets/js/admin.js"></script>
+</body>
+</html>
