@@ -77,6 +77,18 @@ function mediaOptions(selected) {
   return `<option value="">不选择</option>${state.media.map((item) => `<option value="${item.id}" ${Number(selected) === item.id ? "selected" : ""}>${escapeHtml(item.file_path)}</option>`).join("")}`;
 }
 
+function requiredMediaOptions(selected) {
+  return `<option value="">请选择图片</option>${state.media.map((item) => `<option value="${item.id}" ${Number(selected) === item.id ? "selected" : ""}>${escapeHtml(item.file_path)}</option>`).join("")}`;
+}
+
+function requiredReportGroupOptions(selected) {
+  return `<option value="">请选择报告分组</option>${state.reportGroups.map((item) => `<option value="${item.id}" ${Number(selected) === item.id ? "selected" : ""}>${escapeHtml(item.title)}</option>`).join("")}`;
+}
+
+function requiredVisibilityOptions(selected) {
+  return `<option value="">请选择是否显示</option><option value="1" ${String(selected) === "1" ? "selected" : ""}>显示/启用</option><option value="0" ${String(selected) === "0" ? "selected" : ""}>隐藏/停用</option>`;
+}
+
 function pageOptions(selected) {
   return state.pages.map((item) => `<option value="${item.id}" ${Number(selected) === item.id ? "selected" : ""}>${escapeHtml(item.title)} / ${escapeHtml(item.slug)}</option>`).join("");
 }
@@ -351,11 +363,11 @@ const crudConfigs = {
     endpoint: "/api/admin/home-slides",
     fields: [
       { name: "title", label: "标题", required: true },
-      { name: "subtitle", label: "副标题" },
-      { name: "image_id", label: "图片", type: "select", options: mediaOptions },
-      { name: "link_url", label: "跳转地址" },
-      { name: "sort_order", label: "排序" },
-      { name: "is_visible", label: "是否显示", type: "boolean" }
+      { name: "subtitle", label: "副标题", required: true },
+      { name: "image_id", label: "图片", type: "select", options: requiredMediaOptions, required: true },
+      { name: "link_url", label: "跳转地址", required: true },
+      { name: "sort_order", label: "排序", type: "number", required: true },
+      { name: "is_visible", label: "是否显示", type: "boolean", defaultValue: 1 }
     ],
     columns: [
       { name: "title", label: "标题" },
@@ -369,8 +381,8 @@ const crudConfigs = {
     fields: [
       { name: "name", label: "分类名称", required: true },
       { name: "slug", label: "分类标识", required: true },
-      { name: "sort_order", label: "排序" },
-      { name: "is_visible", label: "是否显示", type: "boolean" }
+      { name: "sort_order", label: "排序", type: "number", required: true },
+      { name: "is_visible", label: "是否显示", type: "boolean", defaultValue: 1 }
     ],
     columns: [
       { name: "name", label: "名称" },
@@ -382,15 +394,15 @@ const crudConfigs = {
     title: "产品",
     endpoint: "/api/admin/products",
     fields: [
-      { name: "category_id", label: "所属分类", type: "select", options: categoryOptions },
+      { name: "category_id", label: "所属分类", type: "select", options: categoryOptions, required: true },
       { name: "name", label: "产品名称", required: true },
-      { name: "summary", label: "工艺及特点" },
-      { name: "material", label: "材质" },
-      { name: "specification", label: "规格及容量" },
-      { name: "image_id", label: "产品图片", type: "select", options: mediaOptions },
-      { name: "is_insured", label: "已投保标识", type: "boolean" },
-      { name: "sort_order", label: "排序" },
-      { name: "is_visible", label: "是否显示", type: "boolean" }
+      { name: "summary", label: "工艺及特点", required: true },
+      { name: "material", label: "材质", required: true },
+      { name: "specification", label: "规格及容量", required: true },
+      { name: "image_id", label: "产品图片", type: "select", options: requiredMediaOptions, required: true },
+      { name: "is_insured", label: "已投保标识", type: "boolean", defaultValue: 1 },
+      { name: "sort_order", label: "排序", type: "number", required: true },
+      { name: "is_visible", label: "是否显示", type: "boolean", defaultValue: 1 }
     ],
     columns: [
       { name: "name", label: "名称" },
@@ -418,11 +430,11 @@ const crudConfigs = {
     title: "检测报告图片",
     endpoint: "/api/admin/quality-report-images",
     fields: [
-      { name: "group_id", label: "报告分组", type: "select", options: reportGroupOptions },
-      { name: "image_id", label: "报告图片", type: "select", options: mediaOptions },
-      { name: "alt_text", label: "图片说明" },
-      { name: "sort_order", label: "排序" },
-      { name: "is_visible", label: "是否显示", type: "boolean" }
+      { name: "group_id", label: "报告分组", type: "select", options: requiredReportGroupOptions, required: true },
+      { name: "image_id", label: "报告图片", type: "select", options: requiredMediaOptions, required: true },
+      { name: "alt_text", label: "图片说明", required: true },
+      { name: "sort_order", label: "排序", type: "number", required: true },
+      { name: "is_visible", label: "是否显示", type: "select", options: requiredVisibilityOptions, required: true, defaultValue: "1" }
     ],
     columns: [
       { name: "group_title", label: "报告分组" },

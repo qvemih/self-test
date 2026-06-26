@@ -83,10 +83,16 @@ async function homeSlides(req, res, params) {
   if (req.method === "GET") return sendJson(res, 200, contentService.getHomeSlides({ includeHidden: true }));
   if (req.method === "POST") {
     const payload = await readJson(req);
-    requireFields(payload, ["title"]);
+    requireFields(payload, ["title", "subtitle", "image_id", "link_url", "sort_order"]);
+    requireNumberFields(payload, ["sort_order"]);
     return sendJson(res, 201, adminService.createHomeSlide(payload));
   }
-  if (req.method === "PUT") return sendJson(res, 200, adminService.updateHomeSlide(params.id, await readJson(req)));
+  if (req.method === "PUT") {
+    const payload = await readJson(req);
+    requireFields(payload, ["title", "subtitle", "image_id", "link_url", "sort_order"]);
+    requireNumberFields(payload, ["sort_order"]);
+    return sendJson(res, 200, adminService.updateHomeSlide(params.id, payload));
+  }
   if (req.method === "DELETE") return sendJson(res, 200, adminService.deleteRow("home_slides", params.id));
 }
 
@@ -95,10 +101,16 @@ async function productCategories(req, res, params) {
   if (req.method === "GET") return sendJson(res, 200, contentService.getProductCategories({ includeHidden: true }));
   if (req.method === "POST") {
     const payload = await readJson(req);
-    requireFields(payload, ["name", "slug"]);
+    requireFields(payload, ["name", "slug", "sort_order", "is_visible"]);
+    requireNumberFields(payload, ["sort_order"]);
     return sendJson(res, 201, adminService.createProductCategory(payload));
   }
-  if (req.method === "PUT") return sendJson(res, 200, adminService.updateProductCategory(params.id, await readJson(req)));
+  if (req.method === "PUT") {
+    const payload = await readJson(req);
+    requireFields(payload, ["name", "slug", "sort_order", "is_visible"]);
+    requireNumberFields(payload, ["sort_order"]);
+    return sendJson(res, 200, adminService.updateProductCategory(params.id, payload));
+  }
   if (req.method === "DELETE") return sendJson(res, 200, adminService.deleteRow("product_categories", params.id));
 }
 
@@ -107,10 +119,16 @@ async function products(req, res, params, query) {
   if (req.method === "GET") return sendJson(res, 200, contentService.getProducts({ category: query.get("category"), includeHidden: true }));
   if (req.method === "POST") {
     const payload = await readJson(req);
-    requireFields(payload, ["name"]);
+    requireFields(payload, ["category_id", "name", "summary", "material", "specification", "image_id", "is_insured", "sort_order", "is_visible"]);
+    requireNumberFields(payload, ["category_id", "image_id", "sort_order"]);
     return sendJson(res, 201, adminService.createProduct(payload));
   }
-  if (req.method === "PUT") return sendJson(res, 200, adminService.updateProduct(params.id, await readJson(req)));
+  if (req.method === "PUT") {
+    const payload = await readJson(req);
+    requireFields(payload, ["category_id", "name", "summary", "material", "specification", "image_id", "is_insured", "sort_order", "is_visible"]);
+    requireNumberFields(payload, ["category_id", "image_id", "sort_order"]);
+    return sendJson(res, 200, adminService.updateProduct(params.id, payload));
+  }
   if (req.method === "DELETE") return sendJson(res, 200, adminService.deleteRow("products", params.id));
 }
 
@@ -137,10 +155,16 @@ async function reportImages(req, res, params) {
   if (req.method === "GET") return sendJson(res, 200, adminService.listReportImages());
   if (req.method === "POST") {
     const payload = await readJson(req);
-    requireFields(payload, ["group_id"]);
+    requireFields(payload, ["group_id", "image_id", "alt_text", "sort_order", "is_visible"]);
+    requireNumberFields(payload, ["sort_order"]);
     return sendJson(res, 201, adminService.createReportImage(payload));
   }
-  if (req.method === "PUT") return sendJson(res, 200, adminService.updateReportImage(params.id, await readJson(req)));
+  if (req.method === "PUT") {
+    const payload = await readJson(req);
+    requireFields(payload, ["group_id", "image_id", "alt_text", "sort_order", "is_visible"]);
+    requireNumberFields(payload, ["sort_order"]);
+    return sendJson(res, 200, adminService.updateReportImage(params.id, payload));
+  }
   if (req.method === "DELETE") return sendJson(res, 200, adminService.deleteRow("quality_report_images", params.id));
 }
 
